@@ -57,7 +57,7 @@ select s.CREATEDATE, c.fullname, d.FULLNAME from SCHEDULE as s inner
    -- GP.NAMEPARAMS as "Параметр",
     Par.MODIFYDATE as "Дата изменения"
     --, Par.VALUETEXT,
-    ,(2022 - C.BYEAR) as "Полных лет"                               --Костыль, переделать
+    ,DATEDIFF (year, bdate, current_date) as "Полных лет"                 -- возвращает разницу между датами (year\month\day\etc., date1, date2)
     ,d.dgname as "Диагноз"
   from PARAMSINFO as Par
   left join GROUPSPARAMS as GP on Par.codeparams = GP.codeparams
@@ -67,14 +67,9 @@ select s.CREATEDATE, c.fullname, d.FULLNAME from SCHEDULE as s inner
 
   Where
   Par.MODIFYDATE between [bdate] and  [fdate]
-
   and
-
-
-  (
-  (Par.codeparams = 990078306 and Par.VALUETEXT = 'Да')
-  or (Par.codeparams = 990078307 and Par.VALUETEXT = 'Да')
-   )
+  (  (Par.codeparams = 990078306 and Par.VALUETEXT = 'Да')		 -- код параметров с селектами да\нет
+  or (Par.codeparams = 990078307 and Par.VALUETEXT = 'Да')     )
 
 
 
@@ -83,11 +78,10 @@ select c.fullname, d.fullname, sch.WORKDATE from SCHEDULE as sch
   join clients as c on sch.pcode = c.pcode
   join DOCTOR as d on sch.dcode = d.dcode
 
-
-      where
-        (sch.WORKDATE >= '01.11.2021' and sch.WORKDATE <= '30.11.2021')
-        and (sch.CLVISIT is null or sch.CLVISIT = '0')
-        and d.fullname in ('Акимова Ольга Владимировна')
+    where
+      (sch.WORKDATE >= '01.11.2021' and sch.WORKDATE <= '30.11.2021')
+      and (sch.CLVISIT is null or sch.CLVISIT = '0')
+      and d.fullname in ('Акимова Ольга Владимировна')    		  -- МРТ делает этот доктор на одном филиале
 
 
 
