@@ -1,0 +1,97 @@
+//Записи от ПроДокторов
+
+Select sh.FILIAL , count(*) as "Всего записей", sum (sh.CLVISIT) as "Пришло", sum (t.PRIMTREAT) as "первичный"
+	from SCHEDULE as sh
+		inner join Clients as c on Sh.PCODE = C.PCODE
+		inner join Doctor as d on Sh.uid = D.DCODE
+		left join TREAT as T on Sh.TREATCODE = T.TREATCODE
+
+	where
+		d.dname = 'Портал ПроДокторов'                     -- C проДокторов запись производится системным пользователем 
+		and extract (year from Sh.workdate)  = 2022        -- Получение из типа данных "дата"
+
+group by sh.FILIAL
+
+
+
+//записи с определённого номера (ПроДокторов)
+
+select count (*) as "Всего звонков", count (ShA.SCHEDID) as "Записались", count (Sh.CLVISIT) as "Пришло", sum (t.PRIMTREAT) as "Первичный"
+
+  from CALL_TRACKING as CT
+      left join SCHEDAPPEALS as ShA on ct.SAID = ShA.SAID
+      join SCHEDULE as Sh on ShA.Schedid = Sh.SCHEDID
+      left join TREAT as T on Sh.TREATCODE = T.TREATCODE
+
+
+  where CT.phone = '74732121123'
+  and Ct.ctdate between [bdate] and [fdate]
+
+
+
+// Приёмы по определённой скидке
+
+select discountsprav.dname, clients.fullname, TREAT.TREATDATE, clients.filial  from clients, discountsprav, TREAT
+  where (discountsprav.dname = 'Скидка 10% ВИП'
+    and TREAT.TREATDATE > '25.10.2020')
+    and (clients.filial = '4' or clients.filial = '99') -- филиал, где была заведена карта
+
+
+
+//Записи после 9 вечера
+
+select s.CREATEDATE, c.fullname, d.FULLNAME from SCHEDULE as s inner
+    join clients as c on s.PCODE=c.PCODE
+    join doctor as d on s.creatorid=d.dcode
+
+  where extract (year from s.CREATEDATE) = 2021
+  and extract (month from s.CREATEDATE) = 11
+  and extract (hour from s.CREATEDATE) > 21
+
+
+
+// Планирование рождения ребёнка
+ select distinct
+    T.FILIAL,
+    c.fullname as "ФИО",
+   -- GP.NAMEPARAMS as "Параметр",
+    Par.MODIFYDATE as "Дата изменения"
+    --, Par.VALUETEXT,
+    ,(2022 - C.BYEAR) as "Полных лет"                               --Костыль, переделать
+    ,d.dgname as "Диагноз"
+  from PARAMSINFO as Par
+  left join GROUPSPARAMS as GP on Par.codeparams = GP.codeparams
+  left join CLIENTS as C on Par.pcode = c.pcode
+  left join TREAT as T on Par.TREATCODE = T.TREATCODE
+  left join DIAGNOSIS as d on d.dgcode=t.dgcode
+
+  Where
+  Par.MODIFYDATE between [bdate] and  [fdate]
+
+  and
+
+
+  (
+  (Par.codeparams = 990078306 and Par.VALUETEXT = 'Да')
+  or (Par.codeparams = 990078307 and Par.VALUETEXT = 'Да')
+   )
+
+
+
+//Не посетили МРТ
+select c.fullname, d.fullname, sch.WORKDATE from SCHEDULE as sch
+  join clients as c on sch.pcode = c.pcode
+  join DOCTOR as d on sch.dcode = d.dcode
+
+
+      where
+        (sch.WORKDATE >= '01.11.2021' and sch.WORKDATE <= '30.11.2021')
+        and (sch.CLVISIT is null or sch.CLVISIT = '0')
+        and d.fullname in ('Акимова Ольга Владимировна')
+
+
+
+
+
+
+
