@@ -1,0 +1,9 @@
+-- Приёмы с отказом от рассылки
+
+select c.fullname as "ФИО", t.treatdate as "Дата приёма", c.clmail as "Почта", c.refuseclmail as "Отказ" from Treat as t
+join clients as c on c.pcode = t.pcode
+
+where t.filial = '10' 
+and t.treatdate between '01.12.2021' and '22.05.2022'
+
+group by 1, 2, 3, 4
