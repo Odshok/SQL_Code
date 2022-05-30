@@ -1,0 +1,13 @@
+select
+t.treatdate,
+c.fullname as "ФИО пациента",
+t.AMOUNTCL as "Полная сумма",
+(t.AMOUNTCL - t.AMOUNTCL_DISC) as "Скидка руб.",
+CASE WHEN (t.AMOUNTCL - t.AMOUNTCL_DISC) > 0 THEN ((t.AMOUNTCL - t.AMOUNTCL_DISC) / (t.AMOUNTCL / 100)) ELSE 0 END as "Процент скидки", 
+-- case when (условие then тру else фолс end)
+t.AMOUNTCL_DISC as "С учётом скидки"
+  from TREAT as t
+  join CLIENTS as c on t.PCODE = c.PCODE
+
+  where t.TREATDATE between '01.01.2022' and '29.05.2022'
+  and t.KATEG = '1'
