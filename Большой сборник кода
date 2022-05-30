@@ -57,7 +57,7 @@ select s.CREATEDATE, c.fullname, d.FULLNAME from SCHEDULE as s inner
    -- GP.NAMEPARAMS as "Параметр",
     Par.MODIFYDATE as "Дата изменения"
     --, Par.VALUETEXT,
-    ,DATEDIFF (year, bdate, current_date) as "Полных лет"                 -- возвращает разницу между датами (year\month\day\etc., date1, date2)
+    ,( DATEDIFF (day, c.bdate, current_date) / 365 ) as "Полных лет"                 -- возвращает разницу между датами (year\month\day\etc., date1, date2). Извлекаю дни, делю на 365, т.к. округление работает не корректно
     ,d.dgname as "Диагноз"
   from PARAMSINFO as Par
   left join GROUPSPARAMS as GP on Par.codeparams = GP.codeparams
