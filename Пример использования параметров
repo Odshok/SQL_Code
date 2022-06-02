@@ -1,0 +1,22 @@
+select
+t.FILIAL as "Филиал",
+c.fullname as "ФИО пац.",
+( DATEDIFF (day, c.bdate, current_date) / 365 ) as "Полных лет",
+CASE WHEN c.POL = 1 THEN 'Муж' ELSE 'Жен' END as "Пол",
+d.DEPNAME as "Отделение",
+c.CLMAIL as "Почта",
+CASE WHEN c.REFUSECLMAIL = 1 THEN 'Отказ' ELSE 'Согласие' END as "Расс. почты",
+CASE WHEN c.REFUSECLMAIL = 1 THEN 'Отказ' ELSE 'Согласие' END as "Расс. СМС"
+
+from TREAT as t
+inner join clients as c on T.PCODE = C.PCODE
+inner join DEPARTMENTS as d on t.depnum = d.depnum
+
+  where
+    t.treatdate between [bdate] and [fdate]                                                    -- Дата
+    and t.filial = [G_customFilial]                                                            -- Филиал
+    and ( DATEDIFF (day, c.bdate, current_date) / 365 ) between [G_age_min] and [G_age_max]    -- Возраст
+    and CASE WHEN [G_departament] is not null THEN t.DEPNUM = [G_departament] END
+    --t.DEPNUM = [G_departament]                                                             -- Отделение
+    and CHAR_LENGTH (c.CLMAIL) > 5
+    and c.POL = [clients_pol]                                                                  -- Пол
